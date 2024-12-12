@@ -1,5 +1,7 @@
-const BASE_URL = "https://api.openweathermap.org/data/2.5/weather?";
+// Example ZIP :  E14,GB
+const API_BASE_URL = "https://api.openweathermap.org/data/2.5/weather?";
 const API_KEY = "829bc908520f8a7393166f1a355e6788&units=imperial";
+const serverURL = "http://localhost:3000";
 
 
 let d = new Date();
@@ -8,8 +10,7 @@ let newDate = d.getMonth()+'.'+ d.getDate()+'.'+ d.getFullYear();
 
 const getWeatherData = async (zipCode) => {
   try {
-
-    const url = `${BASE_URL}zip=${zipCode}&appid=${API_KEY}`; 
+    const url = `${API_BASE_URL}zip=${zipCode}&appid=${API_KEY}`; 
     const response = await fetch(url);
     if (!response.ok) 
       throw new Error(`Unable to fetch data. Status: ${response.status}`);
@@ -24,8 +25,7 @@ const getWeatherData = async (zipCode) => {
 
 const postData = async (path, data) => {
   try {
-
-    const response = await fetch(path, {
+    const response = await fetch(`${serverURL}/projectData`, {
       method: 'POST',
       credentials: 'same-origin',
       headers: {
@@ -41,6 +41,22 @@ const postData = async (path, data) => {
 
   } catch (error) {
     console.error(`Error from Async postData: ${error}`);
+  }
+};
+
+const updateUI = async () => {
+  try {
+    const response = await fetch(`${serverURL}/projectData`); 
+    if (!response.ok) {
+      throw new Error(`Unable to fetch data from server. Status: ${response.status}`);
+    }
+    const data = await response.json();
+
+    document.getElementById('temp').textContent = `Temperature: ${data.temperature}°C`;
+    document.getElementById('date').textContent = `Date: ${data.date}`;
+    document.getElementById('content').textContent = `Feeling: ${data.userResponse}`;
+  } catch (error) {
+    console.error(`Error from Async updateUI: ${error}`);
   }
 };
 
@@ -67,54 +83,13 @@ async function generateButtonListener() {
       };
 
       await postData('/projectData', data);
+      await updateUI();
     }
   } catch (error) {
     console.error(`Error in generate button click handler: ${error}`);
   }
 
 }
-
-
 document.getElementById('generate').addEventListener('click', generateButtonListener);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-document.getElementById('generate').addEventListener('click', async () => {
-  const zipCode = document.getElementById('zip').value.trim();
-  if (!zipCode) {
-    alert('Please enter a ZIP code');
-    return;
-  }
-
-  const weatherData = await getWeatherData(zipCode);
-  if (weatherData) {
-    console.log(`Temperature: ${weatherData.main.temp}°C`);
-    console.log(`Weather: ${weatherData.weather[0].description}`);
-  }
-});
-
-
-
-
-
-
-
-  // const zip = "E14";
-  // const country = "GB";
   

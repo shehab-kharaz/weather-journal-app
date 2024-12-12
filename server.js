@@ -25,7 +25,7 @@ app.post("/projectData", (req, res) => {
   const receivedData = req.body;
   const { temperature, date, userResponse } = receivedData;
   projectData = { temperature, date, userResponse };
-  res.send(`Data received successfully: ${projectData.temperature}, ${projectData.date}, ${projectData.userResponse}`);
+  res.send(projectData);
 })
 
 
