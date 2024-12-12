@@ -1,8 +1,11 @@
 // Example ZIP :  E14,GB
 const API_BASE_URL = "https://api.openweathermap.org/data/2.5/weather?";
 const API_KEY = "829bc908520f8a7393166f1a355e6788&units=imperial";
-const serverURL = "http://localhost:3000";
-
+const SERVER_PORT = "3000";
+const SERVER_URL = `http://localhost:${SERVER_PORT}`;
+const dialog = document.querySelector("#info-dialog");
+const dialogCloseButton = document.querySelector("#close-modal-btn");
+const generateButton = document.getElementById('generate');
 
 let d = new Date();
 let newDate = d.getMonth()+'.'+ d.getDate()+'.'+ d.getFullYear();
@@ -12,6 +15,9 @@ const getWeatherData = async (zipCode) => {
   try {
     const url = `${API_BASE_URL}zip=${zipCode}&appid=${API_KEY}`; 
     const response = await fetch(url);
+    if(response.status === 404)
+      alert(`Country not found, please check the ZIP code`);
+
     if (!response.ok) 
       throw new Error(`Unable to fetch data. Status: ${response.status}`);
     
@@ -25,7 +31,7 @@ const getWeatherData = async (zipCode) => {
 
 const postData = async (path, data) => {
   try {
-    const response = await fetch(`${serverURL}/projectData`, {
+    const response = await fetch(`${SERVER_URL}${path}`, {
       method: 'POST',
       credentials: 'same-origin',
       headers: {
@@ -46,7 +52,7 @@ const postData = async (path, data) => {
 
 const updateUI = async () => {
   try {
-    const response = await fetch(`${serverURL}/projectData`); 
+    const response = await fetch(`${SERVER_URL}/projectData`); 
     if (!response.ok) {
       throw new Error(`Unable to fetch data from server. Status: ${response.status}`);
     }
@@ -84,12 +90,17 @@ async function generateButtonListener() {
 
       await postData('/projectData', data);
       await updateUI();
+      dialog.showModal();
     }
   } catch (error) {
     console.error(`Error in generate button click handler: ${error}`);
   }
 
 }
-document.getElementById('generate').addEventListener('click', generateButtonListener);
+
+generateButton.addEventListener('click', generateButtonListener);
+dialogCloseButton.addEventListener('click', () => dialog.close());
+
+
 
   
