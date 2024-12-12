@@ -45,6 +45,37 @@ const postData = async (path, data) => {
 };
 
 
+async function generateButtonListener() {
+
+  const zipCode = document.getElementById('zip').value.trim();
+  const userResponse = document.getElementById('feelings').value.trim();
+
+  if (!zipCode) {
+    alert('Please enter a ZIP code');
+    return;
+  }
+
+  try {
+    const weatherData = await getWeatherData(zipCode);
+    if (weatherData) {
+      const temperature = weatherData.main.temp;
+
+      const data = {
+        temperature,
+        date: newDate,
+        userResponse,
+      };
+
+      await postData('/projectData', data);
+    }
+  } catch (error) {
+    console.error(`Error in generate button click handler: ${error}`);
+  }
+
+}
+
+
+document.getElementById('generate').addEventListener('click', generateButtonListener);
 
 
 
