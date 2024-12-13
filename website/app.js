@@ -8,7 +8,7 @@ const dialogCloseButton = document.querySelector("#close-modal-btn");
 const generateButton = document.getElementById('generate');
 
 let d = new Date();
-let newDate = d.getMonth()+'.'+ d.getDate()+'.'+ d.getFullYear();
+let newDate = d.getDate() + '.' + (d.getMonth()+1)+ '.' + d.getFullYear();
 
 
 /**
